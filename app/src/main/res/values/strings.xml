@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Marvel App</string>
+
+    <string name="page_indicator">Page %1$s of %2$s</string>
+
+    <string name="comics">Comics</string>
+    <string name="series">Series</string>
+    <string name="stories">Stories</string>
+    <string name="events">Events</string>
+
+    <string name="character_list_empty">We\'ve run out of characters for now</string>
+    <string name="character_list_refresh">Refresh</string>
+    <string name="character_list_next">Next</string>
+    <string name="character_list_prev">Prev</string>
+
+    <string name="character_details_object_empty">No %1$s available for this character</string>
+
+    <string name="okay">Okay</string>
+
+    <string name="error_title">Something went wrong…</string>
+</resources>
