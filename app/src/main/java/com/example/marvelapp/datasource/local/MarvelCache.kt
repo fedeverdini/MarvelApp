@@ -2,10 +2,14 @@ package com.example.marvelapp.datasource.local
 
 import com.example.marvelapp.db.CharacterDao
 import com.example.marvelapp.db.CharacterListViewDao
-import com.example.marvelapp.model.Resource
 import com.example.marvelapp.model.character.Character
 import com.example.marvelapp.ui.character.list.view.CharacterListView
 import com.example.marvelapp.utils.constants.Constants
+import com.example.marvelapp.utils.errors.ErrorCode
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Exception
 import java.util.*
@@ -14,19 +18,20 @@ class MarvelCache(
     private val characterListViewDao: CharacterListViewDao,
     private val characterDao: CharacterDao
 ) : IMarvelCache {
-    override fun getCharacterList(page: Int): Resource<CharacterListView> {
+
+    override fun getCharacterList(page: Int): CharacterListView? {
         return try {
-            Resource.success(characterListViewDao.getCharacterList(page))
+            characterListViewDao.getCharacterList(page)
         } catch (e: Exception) {
-            Resource.success(null)
+            null
         }
     }
 
-    override fun getCharacterDetails(characterId: Int): Resource<Character> {
+    override fun getCharacterDetails(characterId: Int): Character? {
         return try {
-            Resource.success(characterDao.getCharacter(characterId))
+            characterDao.getCharacter(characterId)
         } catch (e: Exception) {
-            Resource.success(null)
+            null
         }
     }
 

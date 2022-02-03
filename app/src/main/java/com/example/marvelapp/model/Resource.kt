@@ -40,7 +40,7 @@ data class Resource<out T>(val status: Status, val data: T? = null, val error: B
                 return if (basic.status == "Ok") {
                     success(obj)
                 } else {
-                    val customError = BaseError(ErrorCode.UNKNOWN, "Unexpected error")
+                    val customError = BaseError(ErrorCode.UNKNOWN, errorMessageString = "Unexpected error")
                     error(customError)
                 }
             } else {

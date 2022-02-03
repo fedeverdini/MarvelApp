@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.example.marvelapp.R
+import com.example.marvelapp.databinding.ErrorDialogFragmentBinding
 import com.example.marvelapp.model.error.BaseError
-import kotlinx.android.synthetic.main.error_dialog_fragment.*
 
 class ErrorDialogFragment : DialogFragment() {
+
+    private var _binding: ErrorDialogFragmentBinding? = null
+    private val binding get() = _binding!!
 
     private var listener: ErrorListener? = null
     private var errorResponse: BaseError? = null
@@ -36,25 +38,25 @@ class ErrorDialogFragment : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        return inflater.inflate(R.layout.error_dialog_fragment, container, false)
+        _binding = ErrorDialogFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        errorButton.setOnClickListener {
+        binding.errorButton.setOnClickListener {
             listener?.onButtonClick()
             dismiss()
         }
 
         errorResponse?.let { error ->
-            errorMessage.text = error.errorMessage
-            errorCode.text = error.errorCode?.name
+            binding.errorMessage.text = error.errorMessageString
+            binding.errorCode.text = error.errorCode?.name
         }
     }
-
 
     interface ErrorListener {
         fun onButtonClick()

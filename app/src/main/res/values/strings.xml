@@ -16,6 +16,20 @@
     <string name="character_details_object_empty">No %1$s available for this character</string>
 
     <string name="okay">Okay</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string name="error_title">Something went wrong…</string>
+
+    <!-- Close app dialog -->
+    <string name="close_app_title">Close App?…</string>
+    <string name="close_app_message">Do you really want to close this amazing app?</string>
+
+    <!-- Error message -->
+    <string name="error_message_connection_timeout">Your request it taking to long, we\'ll send a superhero to check what\'s happening.</string>
+    <string name="error_message_no_internet">No internet available, please check your connected WiFi or Data</string>
+    <string name="error_message_io_exception">No network available, please check your WiFi or Data connection</string>
+    <string name="error_message_unknown">Spider-Man is checking what\'s happening, please try in a few minutes</string>
+    <string name="error_message_http404">We couldn\'t find what you\'re looking for</string>
+    <string name="error_message_http500">It seems some villain is attacking our server</string>
 </resources>

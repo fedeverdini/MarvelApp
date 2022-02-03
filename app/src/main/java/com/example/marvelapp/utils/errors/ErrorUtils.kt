@@ -6,40 +6,64 @@ import com.example.marvelapp.model.error.NoNetworkException
 import java.io.IOException
 import java.net.SocketTimeoutException
 
-abstract class ErrorUtils {
-    companion object {
-        fun getErrorFromThrowable(throwable: Throwable): BaseError {
-            return when (throwable) {
-                is SocketTimeoutException -> BaseError(
-                    ErrorCode.CONNECTION_TIMEOUT,
-                    ErrorCode.CONNECTION_TIMEOUT.message
-                )
-                is NotImplementedError -> BaseError(ErrorCode.NOT_IMPLEMENTED, throwable.message)
-                is NoInternetException -> BaseError(
-                    ErrorCode.NO_INTERNET,
-                    ErrorCode.NO_INTERNET.message
-                )
-                is NoNetworkException -> BaseError(
-                    ErrorCode.NO_INTERNET,
-                    ErrorCode.NO_INTERNET.message
-                )
-                is IOException -> BaseError(ErrorCode.IO_EXCEPTION, throwable.message)
-                else -> BaseError(ErrorCode.UNKNOWN, ErrorCode.UNKNOWN.message)
-            }
-        }
+object ErrorUtils {
+    private const val ERROR_500 = 500
+    private const val ERROR_400 = 400
+    private const val ERROR_409 = 409
+    private const val ERROR_404 = 404
 
-        fun getErrorFromHttpCode(code: Int, message: String): BaseError {
-            return when (code) {
-                500 -> BaseError(ErrorCode.HTTP500, ErrorCode.HTTP500.message)
-                400 -> BaseError(ErrorCode.HTTP400, message)
-                409 -> BaseError(ErrorCode.HTTP409, message)
-                404 -> BaseError(ErrorCode.HTTP404, ErrorCode.HTTP404.message)
-                else -> BaseError(ErrorCode.UNKNOWN, ErrorCode.UNKNOWN.message)
-            }
+    fun getErrorFromThrowable(throwable: Throwable): BaseError {
+        return when (throwable) {
+            is SocketTimeoutException -> BaseError(
+                errorCode = ErrorCode.CONNECTION_TIMEOUT,
+                errorMessageString = ErrorCode.CONNECTION_TIMEOUT.message
+            )
+            is NotImplementedError -> BaseError(
+                errorCode = ErrorCode.NOT_IMPLEMENTED,
+                errorMessageString = throwable.message
+            )
+            is NoInternetException -> BaseError(
+                errorCode = ErrorCode.NO_INTERNET,
+                errorMessageString = ErrorCode.NO_INTERNET.message
+            )
+            is NoNetworkException -> BaseError(
+                errorCode = ErrorCode.NO_INTERNET,
+                errorMessageString = ErrorCode.NO_INTERNET.message
+            )
+            is IOException -> BaseError(
+                ErrorCode.IO_EXCEPTION,
+                errorMessageString = throwable.message
+            )
+            else -> BaseError(
+                errorCode = ErrorCode.UNKNOWN,
+                errorMessageString = ErrorCode.UNKNOWN.message
+            )
         }
+    }
 
-        fun createError(error: ErrorCode, message: String? = null): BaseError {
-            return BaseError(error, message ?: error.message)
+    fun getErrorFromHttpCode(code: Int, message: String): BaseError {
+        return when (code) {
+            ERROR_500 -> BaseError(
+                errorCode = ErrorCode.HTTP500,
+                errorMessageString = ErrorCode.HTTP500.message
+            )
+            ERROR_400 -> BaseError(errorCode = ErrorCode.HTTP400, errorMessageString = message)
+            ERROR_409 -> BaseError(errorCode = ErrorCode.HTTP409, errorMessageString = message)
+            ERROR_404 -> BaseError(
+                errorCode = ErrorCode.HTTP404,
+                errorMessageString = ErrorCode.HTTP404.message
+            )
+            else -> BaseError(
+                errorCode = ErrorCode.UNKNOWN,
+                errorMessageString = ErrorCode.UNKNOWN.message
+            )
         }
+    }
+
+    fun createError(error: ErrorCode, message: String? = null): BaseError {
+        return BaseError(
+            errorCode = error,
+            errorMessageString = message ?: error.message
+        )
     }
 }

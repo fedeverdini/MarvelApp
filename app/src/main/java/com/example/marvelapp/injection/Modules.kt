@@ -9,6 +9,7 @@ import com.example.marvelapp.datasource.remote.MarvelApi
 import com.example.marvelapp.db.CharacterDao
 import com.example.marvelapp.db.CharacterListViewDao
 import com.example.marvelapp.db.MarvelDatabase
+import com.example.marvelapp.model.character.CharacterListMapper
 import com.example.marvelapp.network.retrofit.RetrofitFactory
 import com.example.marvelapp.ui.character.details.CharacterDetailsViewModel
 import com.example.marvelapp.ui.character.list.CharacterListViewModel
@@ -74,6 +75,7 @@ val cacheModule = module {
 }
 
 val repoModule = module {
+    single { CharacterListMapper() }
     factory<IMarvelRepo> {
         MarvelRepo(get(), get())
     }
@@ -86,10 +88,10 @@ val useCaseModule = module {
 
 val viewModelsModule = module {
     viewModel {
-        CharacterListViewModel(get(), Dispatchers)
+        CharacterListViewModel(get(), get())
     }
 
     viewModel {
-        CharacterDetailsViewModel(get(), Dispatchers)
+        CharacterDetailsViewModel(get(), get())
     }
 }

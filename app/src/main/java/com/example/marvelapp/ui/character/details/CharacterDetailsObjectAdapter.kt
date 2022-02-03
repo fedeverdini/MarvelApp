@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.marvelapp.R
+import com.example.marvelapp.databinding.CharacterDetailsObjectItemBinding
 
-class CharacterDetailsObjectAdapter(private var list: List<String> = emptyList()) : RecyclerView.Adapter<CharacterDetailsObjectAdapter.ViewHolder>() {
+class CharacterDetailsObjectAdapter(private var list: List<String> = emptyList()) :
+    RecyclerView.Adapter<CharacterDetailsObjectAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context)
@@ -25,7 +27,8 @@ class CharacterDetailsObjectAdapter(private var list: List<String> = emptyList()
     }
 
     class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val detailsObjectName: TextView = itemView.findViewById(R.id.detailsObjectName)
+        private val binding = CharacterDetailsObjectItemBinding.bind(itemView)
+        private val detailsObjectName: TextView = binding.detailsObjectName
 
         fun bind(detailsObjectName: String) {
             this.detailsObjectName.text = detailsObjectName

@@ -7,11 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.marvelapp.R
-import kotlinx.android.synthetic.main.character_details_object_fragment.*
+import com.example.marvelapp.databinding.CharacterDetailsObjectFragmentBinding
 import java.util.*
 
 class CharacterDetailsObjectFragment(val tabName: String, private val objectList: List<String>) :
     Fragment() {
+
+    private var _binding: CharacterDetailsObjectFragmentBinding? = null
+    private val binding get() = _binding!!
 
     private val adapter = CharacterDetailsObjectAdapter(objectList)
 
@@ -20,7 +23,8 @@ class CharacterDetailsObjectFragment(val tabName: String, private val objectList
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.character_details_object_fragment, container, false)
+        _binding = CharacterDetailsObjectFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,21 +39,21 @@ class CharacterDetailsObjectFragment(val tabName: String, private val objectList
     }
 
     private fun setUpAdapter() {
-        characterDetailsObjectRecyclerView.layoutManager = LinearLayoutManager(context)
-        characterDetailsObjectRecyclerView.adapter = adapter
+        binding.characterDetailsObjectRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.characterDetailsObjectRecyclerView.adapter = adapter
     }
 
     private fun showEmptyView() {
-        emptyListView.visibility = View.VISIBLE
-        emptyListView.text = String.format(
+        binding.emptyListView.visibility = View.VISIBLE
+        binding.emptyListView.text = String.format(
             getString(R.string.character_details_object_empty),
             tabName.toLowerCase(Locale.ROOT)
         )
-        characterDetailsObjectRecyclerView.visibility = View.GONE
+        binding.characterDetailsObjectRecyclerView.visibility = View.GONE
     }
 
     private fun showData() {
-        emptyListView.visibility = View.GONE
-        characterDetailsObjectRecyclerView.visibility = View.VISIBLE
+        binding.emptyListView.visibility = View.GONE
+        binding.characterDetailsObjectRecyclerView.visibility = View.VISIBLE
     }
 }

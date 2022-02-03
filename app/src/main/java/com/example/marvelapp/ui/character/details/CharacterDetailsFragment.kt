@@ -1,89 +1,120 @@
 package com.example.marvelapp.ui.character.details
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.marvelapp.R
-import com.example.marvelapp.model.DataEvent
+import com.example.marvelapp.databinding.CharacterDetailsFragmentBinding
 import com.example.marvelapp.model.character.Character
 import com.example.marvelapp.model.character.IDetailObject
 import com.example.marvelapp.model.error.BaseError
 import com.example.marvelapp.ui.character.list.CharacterListFragment
 import com.example.marvelapp.ui.main.ErrorDialogFragment
 import com.example.marvelapp.ui.main.MainActivity
+import com.example.marvelapp.utils.flow.safeCollect
 import com.example.marvelapp.utils.viewpager.IViewPagerUtils
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.character_details_fragment.*
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class CharacterDetailsFragment(private val characterId: Int) : Fragment() {
+class CharacterDetailsFragment : Fragment() {
+
+    private var _binding: CharacterDetailsFragmentBinding? = null
+    private val binding get() = _binding!!
 
     private val characterDetailsViewModel: CharacterDetailsViewModel by viewModel()
     private val viewPagerUtils: IViewPagerUtils by inject()
 
     private lateinit var adapter: CharacterDetailsViewPagerAdapter
 
-    private val uiStateObserver = Observer<DataEvent<CharacterDetailsUiState>> { event ->
-        event.getContentIfNotHandled()?.let { state ->
-            when (state) {
-                CharacterDetailsUiState.Loading -> showLoading(true)
-                is CharacterDetailsUiState.ShowCharacterDetails -> showCharacterDetails(state.result)
-                is CharacterDetailsUiState.ShowError -> showError(state.error)
-            }
-        }
-    }
+    private var characterId: Int = 0
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
-        return inflater.inflate(R.layout.character_details_fragment, container, false)
+        _binding = CharacterDetailsFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        characterDetailsViewModel.uiState.observe(viewLifecycleOwner, uiStateObserver)
 
         setUpDetailsFromArgs()
 
-        characterDetailsViewModel.getCharacterDetails(characterId)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                characterDetailsViewModel.uiState.safeCollect { onStateUpdated(it) }
+            }
+        }
+
+        characterDetailsViewModel.setCharacterId(characterId)
+        characterDetailsViewModel.forceRefreshState()
+    }
+
+    private fun onStateUpdated(uiState: CharacterDetailsUiState) {
+        showLoading(uiState is CharacterDetailsUiState.Loading)
+
+        when (uiState) {
+            CharacterDetailsUiState.Loading -> Unit
+            is CharacterDetailsUiState.ShowCharacterDetails -> showCharacterDetails(uiState.result)
+            is CharacterDetailsUiState.ShowError -> showError(uiState.error)
+        }
     }
 
     private fun setUpDetailsFromArgs() {
         arguments?.let { args ->
+            val id = args[CharacterListFragment.ARG_CHARACTER_ID].toString().toInt()
             val imageUrl = args[CharacterListFragment.ARG_CHARACTER_IMAGE_URL].toString()
             val name = args[CharacterListFragment.ARG_CHARACTER_NAME].toString()
+            this.characterId = id
 
-            characterName.text = name
+            binding.characterName.text = name
             Picasso.get().load(imageUrl)
                 .error(R.drawable.ic_launcher_foreground)
-                .into(characterImage)
+                .into(binding.characterImage)
         }
     }
 
     private fun showCharacterDetails(details: Character) {
 
         if (details.description.isBlank()) {
-            characterDescription.visibility = View.GONE
+            binding.characterDescription.visibility = View.GONE
         } else {
-            characterDescription.text = details.description
-            characterDescription.visibility = View.VISIBLE
+            binding.characterDescription.text = details.description
+            binding.characterDescription.visibility = View.VISIBLE
         }
 
         val comicsPage =
-            CharacterDetailsObjectFragment(getString(R.string.comics), getDetailsObjectList(details.comics))
+            CharacterDetailsObjectFragment(
+                getString(R.string.comics),
+                getDetailsObjectList(details.comics)
+            )
         val seriesPage =
-            CharacterDetailsObjectFragment(getString(R.string.series), getDetailsObjectList(details.series))
+            CharacterDetailsObjectFragment(
+                getString(R.string.series),
+                getDetailsObjectList(details.series)
+            )
         val storiesPage =
-            CharacterDetailsObjectFragment(getString(R.string.stories), getDetailsObjectList(details.stories))
+            CharacterDetailsObjectFragment(
+                getString(R.string.stories),
+                getDetailsObjectList(details.stories)
+            )
         val eventsPage =
-            CharacterDetailsObjectFragment(getString(R.string.events), getDetailsObjectList(details.events))
+            CharacterDetailsObjectFragment(
+                getString(R.string.events),
+                getDetailsObjectList(details.events)
+            )
 
         adapter = CharacterDetailsViewPagerAdapter(this).apply {
             addPage(comicsPage)
@@ -92,10 +123,10 @@ class CharacterDetailsFragment(private val characterId: Int) : Fragment() {
             addPage(seriesPage)
         }
 
-        pager.adapter = adapter
-        pager.registerOnPageChangeCallback(getDynamicHeightListener())
+        binding.pager.adapter = adapter
+        binding.pager.registerOnPageChangeCallback(getDynamicHeightListener())
 
-        TabLayoutMediator(tabLayout, pager) { tab, position ->
+        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.text = adapter.getTabName(position)
         }.attach()
 
@@ -118,7 +149,7 @@ class CharacterDetailsFragment(private val characterId: Int) : Fragment() {
         showLoading(false)
         val listener = object : ErrorDialogFragment.ErrorListener {
             override fun onButtonClick() {
-                (activity as MainActivity).replaceFragment(CharacterListFragment())
+                findNavController().navigate(R.id.characterListFragment)
             }
         }
         (activity as MainActivity).showError(error, listener)
@@ -130,7 +161,7 @@ class CharacterDetailsFragment(private val characterId: Int) : Fragment() {
                 super.onPageSelected(position)
                 val fragment = adapter.getFragment(position)
                 fragment.view?.let {
-                    viewPagerUtils.updatePagerHeightForChild(it, pager)
+                    viewPagerUtils.updatePagerHeightForChild(it, binding.pager)
                 }
             }
         }

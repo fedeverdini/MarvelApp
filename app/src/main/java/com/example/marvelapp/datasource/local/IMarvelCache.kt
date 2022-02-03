@@ -5,8 +5,8 @@ import com.example.marvelapp.model.character.Character
 import com.example.marvelapp.ui.character.list.view.CharacterListView
 
 interface IMarvelCache {
-    fun getCharacterList(page: Int): Resource<CharacterListView>
-    fun getCharacterDetails(characterId: Int): Resource<Character>
+    fun getCharacterList(page: Int): CharacterListView?
+    fun getCharacterDetails(characterId: Int): Character?
 
     fun saveCharacterList(page: Int, data: CharacterListView)
     fun saveCharacterDetails(data: Character)
