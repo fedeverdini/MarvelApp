@@ -60,7 +60,7 @@ class CharacterDetailsViewModelTest {
         val finalExpectedState = CharacterDetailsUiState.ShowError(
             BaseError(
                 ErrorCode.UNKNOWN,
-                errorMessageString = "Iron-Man is checking what's happening, please try in a few minutes"
+                errorMessageString = "Spider-Man is checking what's happening, please try in a few minutes"
             )
         )
 

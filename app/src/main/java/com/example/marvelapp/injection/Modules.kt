@@ -88,10 +88,10 @@ val useCaseModule = module {
 
 val viewModelsModule = module {
     viewModel {
-        CharacterListViewModel(get(), get())
+        CharacterListViewModel(get())
     }
 
     viewModel {
-        CharacterDetailsViewModel(get(), get())
+        CharacterDetailsViewModel(get())
     }
 }

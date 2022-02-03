@@ -68,7 +68,7 @@ class CharacterListViewModelTest {
         }
 
         val expectedState = CharacterListUiState.ShowError(BaseError(ErrorCode.UNKNOWN,
-            errorMessageString = "Iron-Man is checking what's happening, please try in a few minutes"))
+            errorMessageString = "Spider-Man is checking what's happening, please try in a few minutes"))
 
         // When
         val actualState = sut.uiState.value
